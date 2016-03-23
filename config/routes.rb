@@ -20,5 +20,7 @@ Rails.application.routes.draw do
   resources :thoughts, only: [:create, :index]
   resources :follows, only: [:create, :destroy]
 
+  resource :hip_check, only: [:new, :create, :show]
+
   root to: 'thoughts#index'
 end
