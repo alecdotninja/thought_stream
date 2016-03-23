@@ -20,20 +20,18 @@ class User < ActiveRecord::Base
   validates :handle, presence: true, uniqueness: true, format: /\A[a-z][a-z0-9]+\z/i
 
   def related_thoughts
-    thought_id = Thought.arel_table[:id]
-
-    Thought.where(
-      thought_id.in(
+    @related_thoughts ||= Thought.where(
+      Thought.arel_table[:id].in(
         Arel.sql(thoughts.select(:id).to_sql)
       ).or(
-        thought_id.in(
+        Thought.arel_table[:id].in(
           Arel.sql(mentions.select(:id).to_sql)
         )
       )
     ).uniq
   end
 
-  def is_following?(user)
+  def following?(user)
     following.where(id: user.id).exists?
   end
 end
