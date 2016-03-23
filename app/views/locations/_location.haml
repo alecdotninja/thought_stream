@@ -1,0 +1,5 @@
+.list-group-item{href: location_path(location.handle)}
+  %h4.list-group-item-heading
+    %a{href: location_path(location.handle)}
+      = precede '@' do
+        = location.handle

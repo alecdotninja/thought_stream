@@ -1,17 +1,21 @@
 class Thought < ActiveRecord::Base
   MENTION_MATCHER = /~([a-z][a-z0-9]+)/i
+  CHECKIN_MATCHER = /@([a-z][a-z0-9]+)/i
 
   belongs_to :user, inverse_of: :thoughts
 
-  has_many :mentions, inverse_of: :thought
+  has_many :mentions, inverse_of: :thought, dependent: :destroy
   has_many :mentioned_users, through: :mentions, source: :mentioned
+
+  has_one :checkin, inverse_of: :thought, dependent: :destroy
 
   validates :user, :message, presence: true
   validates :message, length: { maximum: 128 }
 
   validate :message_has_not_changed, unless: :new_record?
 
-  after_save :enumerate_mentions!, on: [:create]
+  after_save :detect_mentions!, on: [:create]
+  after_save :detect_checkin!, on: [:create]
 
   after_commit { ThoughtRelayJob.perform_later(self) }
 
@@ -52,11 +56,27 @@ class Thought < ActiveRecord::Base
     errors.add(:message, 'cannot be changed') if message_changed?
   end
 
-  def enumerate_mentions!
-    message.scan(/~([a-z][a-z0-9]+)/i).each do |handle|
+  def detect_checkin!
+    message.scan(CHECKIN_MATCHER).each do |match|
+      handle = match.first
+
+      location = Location.find_or_create_by!(handle: handle)
+
+      if location.present?
+        Checkin.create!(thought: self, location: location)
+      end
+    end
+  end
+
+  def detect_mentions!
+    message.scan(MENTION_MATCHER).each do |match|
+      handle = match.first
+
       user = User.find_by(handle: handle)
 
-      mentions << Mention.new(mentioned: user) if user
+      if user.present?
+        mentions.create!(mentioned: user)
+      end
     end
   end
 end

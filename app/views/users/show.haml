@@ -24,6 +24,14 @@
         %a{href:  user_following_path(user.handle)}
           = user.following.count
 
+
+    - if user.current_location.present?
+      .row
+        .col-md-6
+          %b Current Location
+        .col-md-6
+          = link_to "@#{user.current_location.handle}", location_path(user.current_location.handle)
+
     .row
       .col-md-6
         %b Thoughts
@@ -37,7 +45,6 @@
         .col-md-6
           = user.average_time_between_thoughts.to_i
           seconds
-
 
   .col-md-8
     - if user == current_user
