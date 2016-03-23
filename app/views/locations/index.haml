@@ -1,0 +1,6 @@
+.page-header
+  %h1 Locations
+
+.list-group
+  - locations.by_last_checked_in.each do |location|
+    = render 'locations/location', location: location

@@ -18,10 +18,10 @@ class UsersController < ApplicationController
   private
 
   def user
-    User.find_by!(handle: params[:handle])
+    @user ||= User.find_by!(handle: params[:handle])
   end
 
   def users
-    User.all
+    @users ||= User.all
   end
 end

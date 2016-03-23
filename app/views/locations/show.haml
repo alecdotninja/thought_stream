@@ -1,0 +1,25 @@
+.page-header
+  %h1
+    = location.handle
+
+.row
+  .col-md-4
+    %h3
+      Users Here Now
+
+    - if location.users_here_now.count > 0
+      .list-group.users-list
+        - location.users_here_now.order(handle: :asc).each do |user|
+          = render 'users/user', user: user
+    - else
+      %p
+        %i
+          It's so lonely here.
+
+  .col-md-8
+    %h3
+      Checkins
+    
+    .list-group.thoughts-list
+      - location.thoughts.includes(:user).order(created_at: :desc).each do |thought|
+        = render 'thoughts/thought', thought: thought

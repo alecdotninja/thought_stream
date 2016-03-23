@@ -3,15 +3,22 @@ Rails.application.routes.draw do
 
   devise_for :users, controllers: { sessions: 'sessions' }
 
-  scope '/~:handle', constraints: { handle: /[a-z][a-z0-9]+/i } do
+  resources :users, only: [:index]
+
+  scope '/~:handle', constraints: { handle: User::UNACHORED_HANDLE_MATCHER } do
     get '/', to: 'users#show', as: 'user'
     get '/followers', to: 'users#followers', as: 'user_followers'
     get '/following', to: 'users#following', as: 'user_following'
   end
 
+  resources :locations, only: [:index]
+
+  scope '/@:handle', constraints: { handle: Location::UNACHORED_HANDLE_MATCHER } do
+    get '/', to: 'locations#show', as: 'location'
+  end
+
   resources :thoughts, only: [:create, :index]
   resources :follows, only: [:create, :destroy]
-  resources :users, only: [:index]
 
   resource :hip_check, only: [:new, :create, :show]
 

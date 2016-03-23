@@ -11,10 +11,20 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150826054312) do
+ActiveRecord::Schema.define(version: 20160323202028) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "checkins", force: :cascade do |t|
+    t.integer  "thought_id",  null: false
+    t.integer  "location_id", null: false
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
+  end
+
+  add_index "checkins", ["location_id"], name: "index_checkins_on_location_id", using: :btree
+  add_index "checkins", ["thought_id"], name: "index_checkins_on_thought_id", using: :btree
 
   create_table "follows", force: :cascade do |t|
     t.integer  "follower_id"
@@ -25,6 +35,14 @@ ActiveRecord::Schema.define(version: 20150826054312) do
 
   add_index "follows", ["followed_id"], name: "index_follows_on_followed_id", using: :btree
   add_index "follows", ["follower_id"], name: "index_follows_on_follower_id", using: :btree
+
+  create_table "locations", force: :cascade do |t|
+    t.string   "handle",     null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  add_index "locations", ["handle"], name: "index_locations_on_handle", unique: true, using: :btree
 
   create_table "mentions", force: :cascade do |t|
     t.integer  "thought_id"
@@ -37,8 +55,8 @@ ActiveRecord::Schema.define(version: 20150826054312) do
   add_index "mentions", ["thought_id"], name: "index_mentions_on_thought_id", using: :btree
 
   create_table "thoughts", force: :cascade do |t|
-    t.string   "message"
-    t.integer  "user_id"
+    t.string   "message",    null: false
+    t.integer  "user_id",    null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -58,12 +76,15 @@ ActiveRecord::Schema.define(version: 20150826054312) do
     t.string   "last_sign_in_ip"
     t.datetime "created_at",                          null: false
     t.datetime "updated_at",                          null: false
-    t.string   "handle"
+    t.string   "handle",                              null: false
   end
 
   add_index "users", ["email"], name: "index_users_on_email", unique: true, using: :btree
+  add_index "users", ["handle"], name: "index_users_on_handle", unique: true, using: :btree
   add_index "users", ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true, using: :btree
 
+  add_foreign_key "checkins", "locations"
+  add_foreign_key "checkins", "thoughts"
   add_foreign_key "follows", "users", column: "followed_id"
   add_foreign_key "follows", "users", column: "follower_id"
   add_foreign_key "mentions", "thoughts"
