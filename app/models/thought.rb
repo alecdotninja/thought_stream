@@ -6,6 +6,14 @@ class Thought < ActiveRecord::Base
   has_many :mentions, inverse_of: :thought
   has_many :mentioned_users, through: :mentions, source: :mentioned
 
+  scope :on_a_topic_before_a_time, ->(query, time = Time.now) {
+    where(
+      arel_table[:message].matches("%#{query}%").and(
+        arel_table[:created_at].lteq(time)
+      )
+    )
+  }
+
   validates :user, :message, presence: true
   validates :message, length: { maximum: 128 }
 

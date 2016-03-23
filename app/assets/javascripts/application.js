@@ -4,4 +4,6 @@
 //= require bootstrap-sprockets
 //= require cable
 //= require consumer
+//= require moment
+//= require bootstrap-datetimepicker
 //= require_tree .

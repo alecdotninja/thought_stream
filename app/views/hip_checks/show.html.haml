@@ -1,0 +1,19 @@
+- if hipness > 0
+  %h2
+    Hey there hipster, when it comes to
+    = "#{topic},"
+    you are
+    = "#{hipness * 100}%"
+    more hip than the average user.
+- elsif hip_check.hipness < 0
+  %h2
+    Sorry, but when it comes to
+    = "#{topic},"
+    you are
+    = "#{hip_check.hipness * 100}%"
+    less hip than the average user.
+- elsif hip_check.hipness == 0
+  %h2
+    Hey wannabe hipster! When it comes to
+    = "#{topic},"
+    you are no more and no less hip than the average user
