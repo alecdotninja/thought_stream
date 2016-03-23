@@ -29,16 +29,43 @@ class User < ActiveRecord::Base
 
   validates :handle, presence: true, uniqueness: true, format: HANDLE_MATCHER
 
+  # def related_thoughts
+  #   @related_thoughts ||= Thought.where(
+  #     Thought.arel_table[:id].in(
+  #       Arel.sql(thoughts.select(:id).to_sql)
+  #     ).or(
+  #       Thought.arel_table[:id].in(
+  #         Arel.sql(mentions.select(:id).to_sql)
+  #       )
+  #     )
+  #   ).uniq
+  # end
+
   def related_thoughts
-    @related_thoughts ||= Thought.where(
-      Thought.arel_table[:id].in(
-        Arel.sql(thoughts.select(:id).to_sql)
-      ).or(
+    @related_thoughts ||= Thought.distinct.tap do |related_thoughts|
+      thought_ids = thoughts.except(:distinct, :select).select(:id)
+      mention_ids = mentions.except(:distinct, :select).select(:id)
+
+      thoughts_arel = thought_ids.arel
+      mentions_arel = mention_ids.arel
+
+      thoughts_binds = thoughts_arel.bind_values + thought_ids.bind_values
+      mentions_binds = mentions_arel.bind_values + mention_ids.bind_values
+
+      related_thoughts.where!(
         Thought.arel_table[:id].in(
-          Arel.sql(mentions.select(:id).to_sql)
+          thoughts_arel
+        ).or(
+          Thought.arel_table[:id].in(
+            mentions_arel
+          )
         )
       )
-    ).uniq
+
+      (thoughts_binds + mentions_binds).each do |bind|
+        related_thoughts.bind!(bind)
+      end
+    end
   end
 
   def following?(user)
