@@ -15,6 +15,37 @@ class Thought < ActiveRecord::Base
 
   after_commit { ThoughtRelayJob.perform_later(self) }
 
+  AVERAGE_TIME_BETWEEN_CREATED_ATS_SECONDS_EXPRESSION = Arel::Nodes::Division.new(
+    Arel::Nodes::Grouping.new(
+      Arel::Nodes::Subtraction.new(
+        Arel::Nodes::Extract.new(
+          Arel::Nodes::NamedFunction.new('MAX', [
+            arel_table[:created_at]
+          ]),
+          'EPOCH'
+        ),
+        Arel::Nodes::Extract.new(
+          Arel::Nodes::NamedFunction.new('MIN', [
+            arel_table[:created_at]
+          ]),
+          'EPOCH'
+        )
+      )
+    ),
+    Arel::Nodes::Grouping.new(
+      Arel::Nodes::Subtraction.new(
+        Arel::Nodes::NamedFunction.new('COUNT', [
+          arel_table[:created_at]
+        ]),
+        1
+      )
+    )
+  ).freeze
+
+  def self.average_time_between_created_ats
+    pluck(AVERAGE_TIME_BETWEEN_CREATED_ATS_SECONDS_EXPRESSION).first.try(:seconds)
+  end
+
   private
 
   def message_has_not_changed

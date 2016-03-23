@@ -34,4 +34,8 @@ class User < ActiveRecord::Base
   def following?(user)
     following.where(id: user.id).exists?
   end
+
+  def average_time_between_thoughts
+    thoughts.average_time_between_created_ats
+  end
 end

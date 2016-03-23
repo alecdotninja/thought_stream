@@ -13,6 +13,9 @@
 
 ActiveRecord::Schema.define(version: 20150826054312) do
 
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "plpgsql"
+
   create_table "follows", force: :cascade do |t|
     t.integer  "follower_id"
     t.integer  "followed_id"
@@ -20,8 +23,8 @@ ActiveRecord::Schema.define(version: 20150826054312) do
     t.datetime "updated_at",  null: false
   end
 
-  add_index "follows", ["followed_id"], name: "index_follows_on_followed_id"
-  add_index "follows", ["follower_id"], name: "index_follows_on_follower_id"
+  add_index "follows", ["followed_id"], name: "index_follows_on_followed_id", using: :btree
+  add_index "follows", ["follower_id"], name: "index_follows_on_follower_id", using: :btree
 
   create_table "mentions", force: :cascade do |t|
     t.integer  "thought_id"
@@ -30,8 +33,8 @@ ActiveRecord::Schema.define(version: 20150826054312) do
     t.datetime "updated_at",   null: false
   end
 
-  add_index "mentions", ["mentioned_id"], name: "index_mentions_on_mentioned_id"
-  add_index "mentions", ["thought_id"], name: "index_mentions_on_thought_id"
+  add_index "mentions", ["mentioned_id"], name: "index_mentions_on_mentioned_id", using: :btree
+  add_index "mentions", ["thought_id"], name: "index_mentions_on_thought_id", using: :btree
 
   create_table "thoughts", force: :cascade do |t|
     t.string   "message"
@@ -40,7 +43,7 @@ ActiveRecord::Schema.define(version: 20150826054312) do
     t.datetime "updated_at", null: false
   end
 
-  add_index "thoughts", ["user_id"], name: "index_thoughts_on_user_id"
+  add_index "thoughts", ["user_id"], name: "index_thoughts_on_user_id", using: :btree
 
   create_table "users", force: :cascade do |t|
     t.string   "email",                  default: "", null: false
@@ -58,7 +61,12 @@ ActiveRecord::Schema.define(version: 20150826054312) do
     t.string   "handle"
   end
 
-  add_index "users", ["email"], name: "index_users_on_email", unique: true
-  add_index "users", ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
+  add_index "users", ["email"], name: "index_users_on_email", unique: true, using: :btree
+  add_index "users", ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true, using: :btree
 
+  add_foreign_key "follows", "users", column: "followed_id"
+  add_foreign_key "follows", "users", column: "follower_id"
+  add_foreign_key "mentions", "thoughts"
+  add_foreign_key "mentions", "users", column: "mentioned_id"
+  add_foreign_key "thoughts", "users"
 end

@@ -1,12 +1,16 @@
-default: &default
-  adapter: sqlite3
-  pool: 5
-  timeout: 5000
+common: &common
+  adapter: postgresql
+  pool: 25
+
+dev: &dev
+  <<: *common
+  username: postgres
+  password: password
 
 development:
-  <<: *default
-  database: db/development.sqlite3
+  <<: *dev
+  database: thought_stream_development
 
 test:
-  <<: *default
-  database: db/test.sqlite3
+  <<: *dev
+  database: thought_stream_test
