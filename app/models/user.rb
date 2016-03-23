@@ -36,6 +36,6 @@ class User < ActiveRecord::Base
   end
 
   def average_time_between_thoughts
-    thoughts.average_time_between_created_ats
+    @average_time_between_thoughts ||= thoughts.average_time_between_created_ats
   end
 end

@@ -30,6 +30,15 @@
       .col-md-6
         = user.thoughts.count
 
+    - if user.thoughts.count > 1
+      .row
+        .col-md-6
+          %b Average Time Between Thoughts
+        .col-md-6
+          = user.average_time_between_thoughts.to_i
+          seconds
+
+
   .col-md-8
     - if user == current_user
       .panel.panel-default
