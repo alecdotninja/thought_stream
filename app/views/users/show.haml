@@ -1,50 +1,55 @@
 .page-header
-  .pull-right
-    = render 'follows/button', user: user
-
   %h1
     = succeed "'s Stream" do
       = user.handle
 
+  = render 'follows/button', user: user
+
+  %a.btn.btn-default.btn-xs{href: user_followers_path(user.handle)} Followers
+  %a.btn.btn-default.btn-xs{href: user_following_path(user.handle)} Following
+
+  = render 'hip_checks/button', user: user
+
+
+
 .row
   .col-md-4
-    .row
-      .col-md-6
-        %a{href: user_followers_path(user.handle)}
-          %b Followers
-      .col-md-6
-        %a{href: user_followers_path(user.handle)}
-          = user.followers.count
 
-    .row
-      .col-md-6
-        %a{href: user_following_path(user.handle)}
-          %b Following
-      .col-md-6
-        %a{href:  user_following_path(user.handle)}
-          = user.following.count
+    .panel.panel-default.user-stats
+      .panel-body
+        .row
+          .col-md-6
+            %b Followers
+          .col-md-6
+            = user.followers.count
+
+        .row
+          .col-md-6
+            %b Following
+          .col-md-6
+            = user.following.count
 
 
-    - if user.current_location.present?
-      .row
-        .col-md-6
-          %b Current Location
-        .col-md-6
-          = link_to "@#{user.current_location.handle}", location_path(user.current_location.handle)
+        - if user.current_location.present?
+          .row
+            .col-md-6
+              %b Current Location
+            .col-md-6
+              = link_to "@#{user.current_location.handle}", location_path(user.current_location.handle)
 
-    .row
-      .col-md-6
-        %b Thoughts
-      .col-md-6
-        = user.thoughts.count
+        .row
+          .col-md-6
+            %b Thoughts
+          .col-md-6
+            = user.thoughts.count
 
-    - if user.thoughts.count > 1
-      .row
-        .col-md-6
-          %b Average Time Between Thoughts
-        .col-md-6
-          = user.average_time_between_thoughts.to_i
-          seconds
+        - if user.thoughts.count > 1
+          .row
+            .col-md-6
+              %b Average Time Between Thoughts
+            .col-md-6
+              = user.average_time_between_thoughts.to_i
+              seconds
 
   .col-md-8
     - if user == current_user
@@ -52,4 +57,4 @@
         .panel-body.new-thought
           = render 'thoughts/form', thought: Thought.new
 
-      = render 'thoughts/related_thoughts_list', user: user
+    = render 'thoughts/related_thoughts_list', user: user

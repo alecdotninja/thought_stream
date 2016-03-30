@@ -22,6 +22,8 @@ gem 'devise'
 
 gem 'render_anywhere'
 
+gem 'ffaker'
+
 group :development, :test do
   gem 'jazz_hands', github: 'jkrmr/jazz_hands'
   gem 'pry-rails'

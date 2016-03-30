@@ -1,6 +1,6 @@
 class User < ActiveRecord::Base
-  HANDLE_MATCHER = /\A[a-z][a-z0-9]+\z/i
-  UNACHORED_HANDLE_MATCHER = /[a-z][a-z0-9]+/i
+  HANDLE_MATCHER = /\A[a-z][a-z0-9_]+\z/i
+  UNACHORED_HANDLE_MATCHER = /[a-z][a-z0-9_]+/i
 
   devise :database_authenticatable, :registerable, :rememberable, :trackable
 
@@ -32,7 +32,7 @@ class User < ActiveRecord::Base
   validates :handle, presence: true, uniqueness: true, format: HANDLE_MATCHER
 
   # def related_thoughts
-  #   @related_thoughts ||= Thought.where(
+  #   @related_thoughts ||= Thought.distinct.where(
   #     Thought.arel_table[:id].in(
   #       Arel.sql(thoughts.select(:id).to_sql)
   #     ).or(
@@ -40,7 +40,7 @@ class User < ActiveRecord::Base
   #         Arel.sql(mentions.select(:id).to_sql)
   #       )
   #     )
-  #   ).uniq
+  #   )
   # end
 
   def related_thoughts

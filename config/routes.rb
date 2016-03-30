@@ -5,22 +5,20 @@ Rails.application.routes.draw do
 
   resources :users, only: [:index]
 
-  scope '/~:handle', constraints: { handle: User::UNACHORED_HANDLE_MATCHER } do
-    get '/', to: 'users#show', as: 'user'
-    get '/followers', to: 'users#followers', as: 'user_followers'
-    get '/following', to: 'users#following', as: 'user_following'
+  scope '/~:handle', constraints: { handle: User::UNACHORED_HANDLE_MATCHER }, as: 'user' do
+    get '/', to: 'users#show'
+    get '/followers', to: 'users#followers', as: 'followers'
+    get '/following', to: 'users#following', as: 'following'
+
+    resource :hip_check, only: [:new, :create]
   end
 
   resources :locations, only: [:index]
 
-  scope '/@:handle', constraints: { handle: Location::UNACHORED_HANDLE_MATCHER } do
-    get '/', to: 'locations#show', as: 'location'
-  end
+  get '/@:handle', to: 'locations#show', constraints: { handle: Location::UNACHORED_HANDLE_MATCHER }, as: 'location'
 
   resources :thoughts, only: [:create, :index]
   resources :follows, only: [:create, :destroy]
-
-  resource :hip_check, only: [:new, :create, :show]
 
   root to: 'thoughts#index'
 end

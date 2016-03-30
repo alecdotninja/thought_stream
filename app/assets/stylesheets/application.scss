@@ -9,3 +9,7 @@ body {
 .field_with_errors {
   @extend .has-error
 }
+
+.follow-button, .hip-check-button {
+  display: inline-block;
+}

@@ -1,9 +1,0 @@
-= form_for hip_check, url: hip_check_path(hip_check), authenticity_token: true do |f|
-  .input-group
-    = f.collection_select :user_id, User.all, :id, :handle
-  .input-group
-    = f.text_field :topic
-  .input-group
-    =f.hidden_field :time, data: { datetimepicker: true, datetimepicker_inline: true }
-    %span.input-group-btn
-      =f.submit 'HipCheck', class: 'btn btn-primary btn-sm'

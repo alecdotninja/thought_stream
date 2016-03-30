@@ -55,8 +55,8 @@ ActiveRecord::Schema.define(version: 20160323202028) do
   add_index "mentions", ["thought_id"], name: "index_mentions_on_thought_id", using: :btree
 
   create_table "thoughts", force: :cascade do |t|
-    t.string   "message"
-    t.integer  "user_id"
+    t.string   "message",    null: false
+    t.integer  "user_id",    null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -76,10 +76,11 @@ ActiveRecord::Schema.define(version: 20160323202028) do
     t.string   "last_sign_in_ip"
     t.datetime "created_at",                          null: false
     t.datetime "updated_at",                          null: false
-    t.string   "handle"
+    t.string   "handle",                              null: false
   end
 
   add_index "users", ["email"], name: "index_users_on_email", unique: true, using: :btree
+  add_index "users", ["handle"], name: "index_users_on_handle", unique: true, using: :btree
   add_index "users", ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true, using: :btree
 
   add_foreign_key "checkins", "locations"

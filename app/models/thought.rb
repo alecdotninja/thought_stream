@@ -1,6 +1,6 @@
 class Thought < ActiveRecord::Base
-  MENTION_MATCHER = /~([a-z][a-z0-9]+)/i
-  CHECKIN_MATCHER = /@([a-z][a-z0-9]+)/i
+  MENTION_MATCHER = /~([a-z][a-z0-9_]+)/i
+  CHECKIN_MATCHER = /@([a-z][a-z0-9_]+)/i
 
   belongs_to :user, inverse_of: :thoughts
 
@@ -11,7 +11,7 @@ class Thought < ActiveRecord::Base
 
   scope :on_a_topic_before_a_time, ->(query, time = Time.now) {
     where(
-        arel_table[:message].matches("%#{query}%").and(
+        arel_table[:message].matches("%#{sanitize_sql_like(query)}%").and(
             arel_table[:created_at].lteq(time)
         )
     )

@@ -4,7 +4,7 @@
     - if follow.new_record?
       = form_for follow, authenticity_token: true, remote: true do |f|
         = f.hidden_field :followed_id
-        = f.submit 'Follow', class: 'btn btn-primary btn-xs'
+        = f.submit 'Follow', class: 'btn btn-default btn-xs'
     - else
       = form_for follow, method: :delete, authenticity_token: true, remote: true do |f|
-        = f.submit 'Unfollow', class: 'btn btn-primary btn-xs'
+        = f.submit 'Unfollow', class: 'btn btn-default btn-xs'

@@ -1,0 +1,23 @@
+= form_for hip_check, url: user_hip_check_path, html: { class: 'form-horizontal', role: 'form' } do |f|
+  .form-group
+    %label.col-sm-2.control-label
+      User
+    .col-sm-10
+      %input.form-control.disabled{type:'text', disabled: true, value: "~#{f.object.user.try(:handle)}"}
+  .form-group
+    = f.label :topic, class: 'col-sm-2 control-label'
+    .col-sm-10
+      = f.text_field :topic, class: 'form-control'
+
+  .form-group
+    = f.label :time, class: 'col-sm-2 control-label'
+    .col-sm-10
+      .panel.panel-default
+        .panel-body
+          = f.text_field :time, class: 'form-control', data: { datetimepicker: true, datetimepicker_inline: true }
+
+  .form-group.panel-footer
+    .col-sm-offset-2.col-sm-10.text-right
+      = f.submit 'HipCheck&trade;'.html_safe, class: 'btn btn-primary'
+
+
