@@ -2,13 +2,7 @@ class ThoughtsController < ApplicationController
   before_action :authenticate_user!, except: [:index]
 
   def index
-    if current_user
-      thoughts = Thought.joins(:user).merge(current_user.following)
-    else
-      thoughts = Thought.all
-    end
-
-    render :index, locals: { thoughts: thoughts }
+    render :index, locals: { thoughts: Thought.all }
   end
 
   def create

@@ -1,0 +1,9 @@
+.page-header
+  %h1
+    = succeed "'s" do
+      = user.handle
+    Friends
+
+.list-group
+  - users.order(:handle).each do |user|
+    = render 'users/user', user: user

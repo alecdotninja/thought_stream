@@ -7,6 +7,7 @@
 
   %a.btn.btn-default.btn-xs{href: user_followers_path(user.handle)} Followers
   %a.btn.btn-default.btn-xs{href: user_following_path(user.handle)} Following
+  %a.btn.btn-default.btn-xs{href: user_friends_path(user.handle)} Friends
 
   = render 'hip_checks/button', user: user
 
@@ -27,7 +28,7 @@
           .col-md-6
             %b Following
           .col-md-6
-            = user.following.count
+            = user.followees.count
 
 
         - if user.current_location.present?

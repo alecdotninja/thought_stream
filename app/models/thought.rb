@@ -5,17 +5,9 @@ class Thought < ActiveRecord::Base
   belongs_to :user, inverse_of: :thoughts
 
   has_many :mentions, inverse_of: :thought, dependent: :destroy
-  has_many :mentioned_users, through: :mentions, source: :mentioned
+  has_many :mentionees, through: :mentions, source: :mentionee
 
   has_one :checkin, inverse_of: :thought, dependent: :destroy
-
-  scope :on_a_topic_before_a_time, ->(query, time = Time.now) {
-    where(
-        arel_table[:message].matches("%#{sanitize_sql_like(query)}%").and(
-            arel_table[:created_at].lteq(time)
-        )
-    )
-  }
 
   validates :user, :message, presence: true
   validates :message, length: { maximum: 128 }
@@ -27,35 +19,75 @@ class Thought < ActiveRecord::Base
 
   after_commit { ThoughtRelayJob.perform_later(self) }
 
-  AVERAGE_TIME_BETWEEN_CREATED_ATS_SECONDS_EXPRESSION = Arel::Nodes::Division.new(
-    Arel::Nodes::Grouping.new(
-      Arel::Nodes::Subtraction.new(
-        Arel::Nodes::Extract.new(
-          Arel::Nodes::NamedFunction.new('MAX', [
-            arel_table[:created_at]
-          ]),
-          'EPOCH'
-        ),
-        Arel::Nodes::Extract.new(
-          Arel::Nodes::NamedFunction.new('MIN', [
-            arel_table[:created_at]
-          ]),
-          'EPOCH'
+  # scope :on_a_topic_before_a_time, ->(query, time = Time.now) {
+  #   where(
+  #     arel_table[:message].matches("%#{sanitize_sql_like(query)}%").and(
+  #       arel_table[:created_at].lteq(time)
+  #     )
+  #   )
+  # }
+
+  def self.on_topic(topic)
+    all.tap do |on_topic|
+      on_topic.where!(
+        on_topic.table[:message].matches(
+          Arel::Nodes::BindParam.new
         )
       )
-    ),
-    Arel::Nodes::Grouping.new(
-      Arel::Nodes::Subtraction.new(
-        Arel::Nodes::NamedFunction.new('COUNT', [
-          arel_table[:created_at]
-        ]),
-        1
+
+      on_topic.bind!(
+        [columns_hash['message'], "%#{sanitize_sql_like(topic)}%"]
       )
-    )
-  ).freeze
+    end
+  end
+
+  def self.created_before(time)
+    all.tap do |created_before|
+      created_before.where!(
+        created_before.table[:created_at].lt(
+          Arel::Nodes::BindParam.new
+        )
+      )
+
+      created_before.bind!(
+        [columns_hash['created_at'], time]
+      )
+    end
+  end
 
   def self.average_time_between_created_ats
-    pluck(AVERAGE_TIME_BETWEEN_CREATED_ATS_SECONDS_EXPRESSION).first.try(:seconds)
+    scope = all
+
+    rows = scope.pluck(
+      Arel::Nodes::Division.new(
+        Arel::Nodes::Grouping.new(
+          Arel::Nodes::Subtraction.new(
+            Arel::Nodes::Extract.new(
+              Arel::Nodes::NamedFunction.new('MAX', [
+                scope.table[:created_at]
+              ]),
+              'EPOCH'
+            ),
+            Arel::Nodes::Extract.new(
+              Arel::Nodes::NamedFunction.new('MIN', [
+                scope.table[:created_at]
+              ]),
+              'EPOCH'
+            )
+          )
+        ),
+        Arel::Nodes::Grouping.new(
+          Arel::Nodes::Subtraction.new(
+            Arel::Nodes::NamedFunction.new('COUNT', [
+              scope.table[:created_at]
+            ]),
+            1
+          )
+        )
+      )
+    )
+
+    rows.first.try(:seconds)
   end
 
   private
@@ -83,7 +115,7 @@ class Thought < ActiveRecord::Base
       user = User.find_by(handle: handle)
 
       if user.present?
-        mentions.create!(mentioned: user)
+        mentions.create!(mentionee: user)
       end
     end
   end

@@ -24,16 +24,18 @@ ActiveRecord::Schema.define(version: 20160323202028) do
   end
 
   add_index "checkins", ["location_id"], name: "index_checkins_on_location_id", using: :btree
-  add_index "checkins", ["thought_id"], name: "index_checkins_on_thought_id", using: :btree
+  add_index "checkins", ["thought_id"], name: "index_checkins_on_thought_id", unique: true, using: :btree
 
   create_table "follows", force: :cascade do |t|
-    t.integer  "follower_id"
-    t.integer  "followed_id"
+    t.integer  "follower_id", null: false
+    t.integer  "followee_id", null: false
     t.datetime "created_at",  null: false
     t.datetime "updated_at",  null: false
   end
 
-  add_index "follows", ["followed_id"], name: "index_follows_on_followed_id", using: :btree
+  add_index "follows", ["followee_id", "follower_id"], name: "index_follows_on_followee_id_and_follower_id", unique: true, using: :btree
+  add_index "follows", ["followee_id"], name: "index_follows_on_followee_id", using: :btree
+  add_index "follows", ["follower_id", "followee_id"], name: "index_follows_on_follower_id_and_followee_id", unique: true, using: :btree
   add_index "follows", ["follower_id"], name: "index_follows_on_follower_id", using: :btree
 
   create_table "locations", force: :cascade do |t|
@@ -45,13 +47,13 @@ ActiveRecord::Schema.define(version: 20160323202028) do
   add_index "locations", ["handle"], name: "index_locations_on_handle", unique: true, using: :btree
 
   create_table "mentions", force: :cascade do |t|
-    t.integer  "thought_id"
-    t.integer  "mentioned_id"
+    t.integer  "thought_id",   null: false
+    t.integer  "mentionee_id", null: false
     t.datetime "created_at",   null: false
     t.datetime "updated_at",   null: false
   end
 
-  add_index "mentions", ["mentioned_id"], name: "index_mentions_on_mentioned_id", using: :btree
+  add_index "mentions", ["mentionee_id"], name: "index_mentions_on_mentionee_id", using: :btree
   add_index "mentions", ["thought_id"], name: "index_mentions_on_thought_id", using: :btree
 
   create_table "thoughts", force: :cascade do |t|
@@ -85,9 +87,9 @@ ActiveRecord::Schema.define(version: 20160323202028) do
 
   add_foreign_key "checkins", "locations"
   add_foreign_key "checkins", "thoughts"
-  add_foreign_key "follows", "users", column: "followed_id"
+  add_foreign_key "follows", "users", column: "followee_id"
   add_foreign_key "follows", "users", column: "follower_id"
   add_foreign_key "mentions", "thoughts"
-  add_foreign_key "mentions", "users", column: "mentioned_id"
+  add_foreign_key "mentions", "users", column: "mentionee_id"
   add_foreign_key "thoughts", "users"
 end

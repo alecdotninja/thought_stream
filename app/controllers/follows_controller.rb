@@ -9,7 +9,7 @@ class FollowsController < ApplicationController
     end
 
     if request.xhr?
-      render partial: 'button', locals: { user: follow.followed }, change: "follow-button:#{follow.followed_id}"
+      render partial: 'button', locals: { user: follow.followee }, change: "follow-button:#{follow.followee_id}"
     else
       redirect_to :back
     end
@@ -21,7 +21,7 @@ class FollowsController < ApplicationController
     follow.destroy
 
     if request.xhr?
-      render partial: 'button', locals: { user: follow.followed }, change: "follow-button:#{follow.followed_id}"
+      render partial: 'button', locals: { user: follow.followee }, change: "follow-button:#{follow.followee_id}"
     else
       redirect_to :back
     end
@@ -30,6 +30,6 @@ class FollowsController < ApplicationController
   private
 
   def follow_params
-    params.require(:follow).permit(:followed_id)
+    params.require(:follow).permit(:followee_id)
   end
 end

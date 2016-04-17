@@ -9,6 +9,7 @@ Rails.application.routes.draw do
     get '/', to: 'users#show'
     get '/followers', to: 'users#followers', as: 'followers'
     get '/following', to: 'users#following', as: 'following'
+    get '/friends', to: 'users#friends', as: 'friends'
 
     resource :hip_check, only: [:new, :create]
   end

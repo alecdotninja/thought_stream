@@ -1,8 +1,8 @@
 class Mention < ActiveRecord::Base
-  belongs_to :thought, inverse_of: :mentions
-  belongs_to :mentioned, class_name: 'User', inverse_of: :mentions_as_mentioned
+  belongs_to :thought
+  belongs_to :mentionee, class_name: 'User'
 
   has_one :mentioner, through: :thought, source: :user
 
-  validates :thought, :mentioner, :mentioned, presence: true
+  validates :thought, :mentioner, :mentionee, presence: true
 end

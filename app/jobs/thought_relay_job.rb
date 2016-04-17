@@ -13,12 +13,12 @@ class ThoughtRelayJob < ApplicationJob
 
     ActionCable.server.broadcast "thoughts:related-to-#{thought.user_id}", message
 
-    thought.mentioned_user_ids.each do |mentioned_user_id|
-      ActionCable.server.broadcast "thoughts:related-to-#{mentioned_user_id}", message
+    thought.mentionee_ids.each do |mentionee_id|
+      ActionCable.server.broadcast "thoughts:related-to-#{mentionee_id}", message
     end
 
     thought.user.follower_ids.each do |follower_id|
-      ActionCable.server.broadcast "thoughts:from-followed-by-#{mentioned_user_id}", message
+      ActionCable.server.broadcast "thoughts:from-followed-by-#{follower_id}", message
     end
   end
 

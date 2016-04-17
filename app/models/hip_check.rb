@@ -17,7 +17,7 @@ class HipCheck
   private
 
   def thoughts_on_topic_at_time
-    @thoughts_on_topic_at_time ||= Thought.on_a_topic_before_a_time(topic, time.to_time)
+    @thoughts_on_topic_at_time ||= Thought.on_topic(topic).created_before(time.to_time)
   end
 
   def user_thoughts_on_topic_at_time

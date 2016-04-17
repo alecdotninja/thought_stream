@@ -2,5 +2,5 @@
   %h1 Great Thinkers
 
 .list-group
-  - users.order(:handle).each do |user|
+  - users.includes(:followees).order(:handle).each do |user|
     = render 'users/user', user: user

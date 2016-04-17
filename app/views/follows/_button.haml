@@ -1,9 +1,9 @@
 - if current_user && current_user != user
-  - follow = current_user.follows_as_follower.find_or_initialize_by(followed: user)
-  .follow-button{id: "follow-button:#{follow.followed_id}"}
+  - follow = current_user.follows_as_follower.detect { |follow| follow.followee == user } || current_user.follows_as_follower.new(followee: user)
+  .follow-button{id: "follow-button:#{follow.followee_id}"}
     - if follow.new_record?
       = form_for follow, authenticity_token: true, remote: true do |f|
-        = f.hidden_field :followed_id
+        = f.hidden_field :followee_id
         = f.submit 'Follow', class: 'btn btn-default btn-xs'
     - else
       = form_for follow, method: :delete, authenticity_token: true, remote: true do |f|

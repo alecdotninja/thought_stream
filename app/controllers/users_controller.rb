@@ -12,7 +12,11 @@ class UsersController < ApplicationController
   end
 
   def following
-    render :following, locals: { user: user, users: user.following }
+    render :following, locals: { user: user, users: user.followees }
+  end
+
+  def friends
+    render :friends, locals: { user: user, users: user.friends }
   end
 
   private
