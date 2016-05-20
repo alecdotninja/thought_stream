@@ -98,16 +98,4 @@ class User < ActiveRecord::Base
   def average_time_between_thoughts
     @average_time_between_thoughts ||= thoughts.average_time_between_created_ats
   end
-
-  def get_hip_check_value(query, time)
-    all_thoughts = Thought.on_a_topic_before_a_time(query, time)
-    user_thoughts = all_thoughts.merge(thoughts)
-
-    users_at_time = User.created_before(time)
-
-    average_thoughts_on_topic_at_time = all_thoughts.count.to_f / users_at_time.count
-    user_thoughts_on_topic_at_time = user_thoughts.count
-
-    (user_thoughts_on_topic_at_time - average_thoughts_on_topic_at_time) / average_thoughts_on_topic_at_time
-  end
 end
